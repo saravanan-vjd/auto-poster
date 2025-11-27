@@ -18,11 +18,11 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 # ==================== ENV / SECRETS ====================
-# API_KEY = os.getenv("API_KEY")
-# API_SECRET = os.getenv("API_SECRET")
-# ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-# ACCESS_SECRET = os.getenv("ACCESS_SECRET")
-# GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+API_KEY = os.getenv("API_KEY")
+API_SECRET = os.getenv("API_SECRET")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+ACCESS_SECRET = os.getenv("ACCESS_SECRET")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
