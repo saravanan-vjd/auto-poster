@@ -119,16 +119,16 @@ def refill_queue():
     texts = texts[:5]
 
     # 4 Image Quotes
-    prompt_images = "Give 4 beautiful one-line motivational quotes under 120 characters. Return ONLY the quotes."
-    resp_imgs = model.generate_content(prompt_images).text
-    images = []
-    for line in resp_imgs.split("\n"):
-        text = line.strip()
-        if text and text[0].isdigit():
-            text = text.lstrip("0123456789").lstrip(".-) ").strip()
-        if text:
-            images.append(text + tags)
-    images = images[:4]
+    # prompt_images = "Give 4 beautiful one-line motivational quotes under 120 characters. Return ONLY the quotes."
+    # resp_imgs = model.generate_content(prompt_images).text
+    # images = []
+    # for line in resp_imgs.split("\n"):
+    #     text = line.strip()
+    #     if text and text[0].isdigit():
+    #         text = text.lstrip("0123456789").lstrip(".-) ").strip()
+    #     if text:
+    #         images.append(text + tags)
+    # images = images[:4]
 
     # 1 Thread (mandatory)
     thread = []
@@ -141,10 +141,10 @@ def refill_queue():
     # Merge queue
     for t in texts:
         queue.append({"type":"text","text":t})
-    for c in images:
-        img = make_image(c.split("#",1)[0].strip())
-        if img:
-            queue.append({"type":"image","text":c,"img":img})
+    # for c in images:
+    #     img = make_image(c.split("#",1)[0].strip())
+    #     if img:
+    #         queue.append({"type":"image","text":c,"img":img})
     # Thread disabled for now
     # if thread:
     #     thread_str = "\n".join([f"{i+1}/4 {t}" for i,t in enumerate(thread)])
