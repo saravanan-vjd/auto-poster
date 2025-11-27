@@ -1,45 +1,31 @@
 name: Run Twitter Bot
 
 on:
-
   schedule:
-    # India Morning Peak (06:30, 07:00, 07:30 IST)
+  
+  # 15-times daily schedule (UTC converted from target IST windows)
     - cron: "0 1 * * *"     # 06:30 IST
     - cron: "30 1 * * *"    # 07:00 IST
     - cron: "0 2 * * *"     # 07:30 IST
-
-    # India Mid-Late Morning & Light inside-day posting
     - cron: "30 3 * * *"    # 09:00 IST
     - cron: "0 5 * * *"     # 10:30 IST
-
-    # India Noon
     - cron: "30 6 * * *"    # 12:00 IST
-
-    # India-Europe Gap
     - cron: "30 9 * * *"    # 15:00 IST
-
-    # India Evening Peak (19:00, 19:30, 20:00 IST)
     - cron: "30 13 * * *"   # 19:00 IST
     - cron: "0 14 * * *"    # 19:30 IST
     - cron: "30 14 * * *"   # 20:00 IST
-
-    # US + Global Night (01:00, 01:30, 02:00 IST)
-    - cron: "30 19 * * *"   # 01:00 IST
+    - cron: "30 19 * * *"   # 01:00 IST (next day)
     - cron: "0 20 * * *"    # 01:30 IST
     - cron: "30 20 * * *"   # 02:00 IST
-
-    # US Noon (23:30 IST)
-    - cron: "0 18 * * *"    # 23:30 IST
-
-    # Extra US Late-Night Reach (04:30 IST)
     - cron: "0 23 * * *"    # 04:30 IST
+    - cron: "0 18 * * *"    # 23:30 IST
 
   workflow_dispatch: {} # Manual trigger
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
 
     steps:
     - name: Checkout repo
