@@ -1,0 +1,7 @@
+tweepy
+schedule
+google-generativeai
+Pillow
+requests
+beautifulsoup4
+lxml
