@@ -1,17 +1,26 @@
 name: Run Twitter Bot
 
 on:
+
   schedule:
-    - cron: "0 1 * * *"    # 06:30 IST
-    - cron: "0 3 * * *"    # 08:30 IST
-    - cron: "0 5 * * *"    # 10:30 IST
-    - cron: "30 7 * * *"   # 13:00 IST
-    - cron: "0 11 * * *"   # 16:30 IST
-    - cron: "30 13 * * *"  # 19:00 IST
-    - cron: "30 15 * * *"  # 21:00 IST
-    - cron: "0 17 * * *"   # 22:30 IST
-    - cron: "30 19 * * *"  # 01:00 IST
-    - cron: "30 22 * * *"  # 04:00 IST
+    # India Peak – 1 text → 1 image → 1 thread
+    - cron: "0 1 * * *"    # 06:30 IST → 1 text
+    - cron: "10 1 * * *"   # 06:40 IST → 1 image
+    - cron: "20 1 * * *"   # 06:50 IST → 1 thread
+
+    - cron: "30 13 * * *"  # 19:00 IST → 1 text
+    - cron: "40 13 * * *"  # 19:10 IST → 1 image
+    - cron: "50 13 * * *"  # 19:20 IST → 1 thread
+
+    # US Peak – 1 text → 1 image → 1 thread
+    - cron: "30 19 * * *"  # 01:00 IST → 1 text
+    - cron: "40 19 * * *"  # 01:10 IST → 1 image
+    - cron: "50 19 * * *"  # 01:20 IST → 1 thread
+
+    # Non-Peak / Random Posts
+    - cron: "30 3 * * *"   # 08:30 IST → random
+    - cron: "0 7 * * *"    # 13:00 IST → random
+    - cron: "30 10 * * *"  # 16:30 IST → random
 
   workflow_dispatch: {} # Manual trigger
 
