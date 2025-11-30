@@ -1,6 +1,4 @@
 import os
-import io
-import random
 import requests
 import tweepy
 import google.generativeai as genai
@@ -8,7 +6,8 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-# ==================== ENV / SECRETS ====================
+# ==================== ENVIRONMENT VARIABLES ====================
+
 API_KEY = os.getenv("API_KEY")
 API_SECRET = os.getenv("API_SECRET")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
@@ -24,89 +23,148 @@ client = tweepy.Client(
     access_token_secret=ACCESS_SECRET,
     wait_on_rate_limit=True
 )
+
 auth = tweepy.OAuth1UserHandler(API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_SECRET)
 api = tweepy.API(auth)
 
+
 # ==================== LOGGING ====================
-def log(m):
-    now = datetime.now(ZoneInfo("UTC"))
-    print(f"[{now.strftime('%Y-%m-%d %H:%M:%S UTC')}] {m}")
+def log(msg):
+    now = datetime.now(ZoneInfo("UTC")).strftime("%Y-%m-%d %H:%M:%S UTC")
+    print(f"[{now}] {msg}")
 
-log("BOT STARTED")
 
-def post_now():    
+# ==================== TREND SCRAPER ====================
+def get_trends():
+    """Fetch ~20 raw trending hashtags from Trends24."""
+    try:
+        now_ist = datetime.now(ZoneInfo("Asia/Kolkata"))
+        hour = now_ist.hour
 
-    # Generate a tweet via Gemini
-    model = genai.GenerativeModel("gemini-2.5-flash")
-    prompt = """Create 1 tweet in the style of extremely viral, simple, relatable humor.
+        if 6 <= hour < 22:
+            url = "https://trends24.in/india/"
+        else:
+            url = "https://trends24.in/united-states/"
 
-Writing rules:
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
+        soup = BeautifulSoup(r.text, "html.parser")
 
-Tone: casual, dry, mildly unhinged, extremely human
+        raw = []
+        for a in soup.select(".trend-card__list li a"):
+            text = a.get_text(strip=True)
+            if text and len(text) > 1 and not text.startswith("http"):
+                raw.append("#" + text.replace(" ", "").replace("#", ""))
 
-Style: short, simple, universal, everyday observations
+        raw = list(dict.fromkeys(raw))[:20]  # first 20 trends
+        log("RAW TRENDS → " + ", ".join(raw))
+        return raw
 
-No fancy words, no philosophy, no deep wisdom
+    except Exception as e:
+        log("Trend fetch failed → fallback used.")
+        return ["#DailyLife", "#GoodVibes", "#Fun", "#LOL", "#RandomThings"]
 
-Feels like someone thinking out loud
 
-Should be something everyone experiences but never says
+# ==================== AI COMBINED PROMPT ====================
+def build_prompt(trends):
+    return f"""
+You will generate a final Twitter post using the rules below.
 
-Slight sarcasm, light self-roast, a bit dramatic
+----------------------------------------------------
+PART 1 — TREND FILTERING
+----------------------------------------------------
+Here are 20 trending hashtags:
+{trends}
 
-Never inspirational, never motivational
+Your job:
+- Analyze all 20 hashtags.
+- Keep ONLY hashtags that are positive, neutral, fun, harmless, or entertainment-related.
+- REMOVE anything involving:
+  • death, rip, tragedy, sadness, accidents
+  • justice for…, missing persons
+  • politics, elections, protests
+  • violence, crime, scandals, lawsuits
+  • disasters, sickness, global events
+  • drama, hate, fights, negativity
+- Do NOT invent new hashtags.
+- After filtering, return ONLY the first **5 safe hashtags** in the same order they appeared.
 
-No emojis unless naturally funny
+----------------------------------------------------
+PART 2 — TWEET GENERATION
+----------------------------------------------------
+Create 1 tweet in the exact style of extremely viral relatable Twitter humor.
 
-No hashtags
+Tone & Personality:
+- casual, chaotic, very human
+- slightly unhinged, slightly dramatic
+- dry humor, light sarcasm
+- lowercase preferred unless necessary
+- feels like an intrusive thought
+- relatable, self-aware, not serious
+- modern internet voice
+- Gen Z energy but universal
 
-No line breaks — one single paragraph unless it’s a two-part joke
-
-It should feel like a tweet that gets 50k+ likes
-
-Allowed formats:
-
-A simple observation (“eating a meal without watching something feels illegal”)
-
-A chaotic thought (“i’m such a fake idgaf’er because everything bothers me”)
-
-A conversational joke (“ hacker: i have your passwords / me: finally what are they ”)
-
-A relatable complaint (“i suck at hiding gifts”)
-
-A simple question (“if you could master one skill instantly what would it be?”)
+Content Rules:
+- talk about something simple, everyday, painfully relatable
+- nothing deep, nothing wise, nothing poetic
+- no advice, no motivation, no inspiration
+- write like you're texting a friend
+- can be a statement, complaint, question, or tiny chaotic story
+- conversational, not structured
+- optional emojis ONLY if they add comedic chaos (😭😂)
+- one paragraph or one clean line
 
 Do NOT:
+- no hashtags (in the tweet itself)
+- no formal language
+- no deep quotes
+- no metaphors
+- no long explanations
+- no lists
+- no inspirational tone
 
-Do not be poetic.
+----------------------------------------------------
+FINAL OUTPUT FORMAT
+----------------------------------------------------
+Line 1 → the tweet  
+Line 2 → (empty line)  
+Line 3 → the FIVE filtered safe hashtags, space-separated.
 
-Do not be wise.
+Example FORMAT ONLY (not content):
+i hate when my brain loads slower than my wifi
 
-Do not be formal.
+#fun #omg #relatable #daily #lol
 
-Do not explain anything.
+Return ONLY the final post in exactly this 3-line format.
+"""
 
-Do not add hashtags.
 
-Do not use big words.
+# ==================== AI POST GENERATOR ====================
+def make_final_post(trends):
+    model = genai.GenerativeModel("gemini-2.5-flash")
+    prompt = build_prompt(trends)
+    return model.generate_content(prompt).text.strip()
 
-Output: only the tweet. Nothing else."""
-    resp = model.generate_content(prompt).text.strip()
 
-    # Clean numbering or bullets if any
-    if resp and resp[0].isdigit():
-        resp = resp.lstrip("0123456789").lstrip(".-) ").strip()
+# ==================== MAIN POSTER ====================
+def post_now():
+    log("BOT STARTED")
 
-    # Validate length
-    if len(resp) < 20 or len(resp) > 200:
-        log("Generated tweet length invalid — skipping")
+    trends = get_trends()
+    final_post = make_final_post(trends)
+
+    # basic safety check
+    if final_post.count("\n") < 2:
+        log("❌ AI formatting error")
+        log(final_post)
         return
 
     try:
-        client.create_tweet(text=resp)
-        log("✅ POSTED TEXT → " + resp[:100] + " ...")
+        client.create_tweet(text=final_post)
+        log("✅ POSTED → " + final_post.replace("\n", " ")[:140] + " ...")
     except Exception as e:
-        log("❌ ERROR on tweet → " + str(e))
+        log("❌ ERROR → " + str(e))
 
+
+# ==================== ENTRY ====================
 if __name__ == "__main__":
     post_now()
