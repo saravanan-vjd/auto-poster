@@ -109,10 +109,11 @@ Content Rules:
 - nothing deep, nothing wise, nothing poetic
 - no advice, no motivation, no inspiration
 - write like you're texting a friend
-- can be a statement, complaint, question, or tiny chaotic story
+- can be a question, statement, complaint or friendly rage bait
+- ask mokka questions
 - conversational, not structured
 - optional emojis ONLY if they add comedic chaos (😭😂)
-- one paragraph or one clean line
+- should contains only one or two clean line
 
 Do NOT:
 - no hashtags (in the tweet itself)
