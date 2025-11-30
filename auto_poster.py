@@ -78,6 +78,7 @@ Here are 20 trending hashtags:
 Your job:
 - Analyze all 20 hashtags.
 - Keep ONLY hashtags that are positive, neutral, fun, harmless, or entertainment-related.
+- Contains hashtags only in english
 - REMOVE anything involving:
   • death, rip, tragedy, sadness, accidents
   • justice for…, missing persons
