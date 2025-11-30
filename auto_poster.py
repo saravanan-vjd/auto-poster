@@ -38,58 +38,59 @@ def post_now():
 
     # Generate a tweet via Gemini
     model = genai.GenerativeModel("gemini-2.5-flash")
-    prompt = """Create 1 Act like the most sarcastic, deadpan, minimalist Twitter poet who asks short questions just to judge the answers.
+    prompt = """Create 1 tweet in the style of extremely viral, simple, relatable humor.
 
-Generate exactly one post in this structure:
+Writing rules:
 
-Line 1 — Bold Question
+Tone: casual, dry, mildly unhinged, extremely human
 
-7–12 words
+Style: short, simple, universal, everyday observations
 
-Designed to make people reply
+No fancy words, no philosophy, no deep wisdom
 
-Dry sarcasm, quiet judgment
+Feels like someone thinking out loud
 
-Zero emojis, zero hashtags
+Should be something everyone experiences but never says
 
+Slight sarcasm, light self-roast, a bit dramatic
 
-Line 2 — Divider
+Never inspirational, never motivational
 
-Just a single em dash
-Example: —
+No emojis unless naturally funny
 
+No hashtags
 
-Line 3 — My Opinion
+No line breaks — one single paragraph unless it’s a two-part joke
 
-7–12 words
+It should feel like a tweet that gets 50k+ likes
 
-Unimpressed, self-aware sarcasm
+Allowed formats:
 
-Feels like I already know better
+A simple observation (“eating a meal without watching something feels illegal”)
 
+A chaotic thought (“i’m such a fake idgaf’er because everything bothers me”)
 
-Tone Rules:
+A conversational joke (“ hacker: i have your passwords / me: finally what are they ”)
 
-“Seen everything, shocked by nothing”
+A relatable complaint (“i suck at hiding gifts”)
 
-Inside-joke energy
+A simple question (“if you could master one skill instantly what would it be?”)
 
-Not wholesome, not rude — just cold honesty
+Do NOT:
 
-Minimalist, cryptic, quietly superior
+Do not be poetic.
 
+Do not be wise.
 
-Examples: What’s the funniest thing you believed as a kid
-—
-I thought adults actually had a plan
-
-One daily task you’d delete forever
-—
-Laundry should honestly learn to clean itself
+Do not be formal.
 
 Do not explain anything.
-Do not add extra lines.
-Deliver exactly this structure."""
+
+Do not add hashtags.
+
+Do not use big words.
+
+Output: only the tweet. Nothing else."""
     resp = model.generate_content(prompt).text.strip()
 
     # Clean numbering or bullets if any
