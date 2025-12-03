@@ -5,6 +5,8 @@ import google.generativeai as genai
 from bs4 import BeautifulSoup
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import random
+import time
 
 # ==================== ENVIRONMENT VARIABLES ====================
 
@@ -151,6 +153,11 @@ def make_final_post(trends):
 def post_now():
     log("BOT STARTED")
 
+    # RANDOM WAIT TIME (1 to 5 minutes)
+    wait_seconds = random.randint(60, 300)
+    log(f"Waiting for {wait_seconds} seconds before posting...")
+    time.sleep(wait_seconds)
+
     trends = get_trends()
     final_post = make_final_post(trends)
 
@@ -165,7 +172,6 @@ def post_now():
         log("✅ POSTED → " + final_post.replace("\n", " ")[:140] + " ...")
     except Exception as e:
         log("❌ ERROR → " + str(e))
-
 
 # ==================== ENTRY ====================
 if __name__ == "__main__":
