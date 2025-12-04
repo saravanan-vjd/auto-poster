@@ -67,6 +67,7 @@ def get_trends():
 
 
 # ==================== AI COMBINED PROMPT ====================
+
 def build_prompt(trends):
     return f"""
 You will generate a final Twitter post using the rules below.
@@ -74,71 +75,49 @@ You will generate a final Twitter post using the rules below.
 ----------------------------------------------------
 PART 1 — TREND FILTERING
 ----------------------------------------------------
-Here are 20 trending hashtags:
+Here are ~20 trending hashtags:
 {trends}
 
 Your job:
-- Analyze all 20 hashtags.
-- Keep ONLY hashtags that are positive, neutral, fun, harmless, or entertainment-related.
-- Contains hashtags only in english
-- REMOVE anything involving:
-  • death, rip, tragedy, sadness, accidents
-  • justice for…, missing persons
-  • politics, elections, protests
-  • violence, crime, scandals, lawsuits
-  • disasters, sickness, global events
-  • drama, hate, fights, negativity
-- Do NOT invent new hashtags.
-- After filtering, return ONLY the first **5 safe hashtags** in the same order they appeared.
+- Filter only FUN, ENTERTAINMENT, POSITIVE, MEME-RELEVANT hashtags
+- Must be ENGLISH topic (remove Hindi/regional if found)
+- Remove politics, war, elections, death, RIP, crime, scandals, serious topics
+- Keep only the FIRST 5 safe hashtags in the same original order
 
 ----------------------------------------------------
-PART 2 — TWEET GENERATION
+PART 2 — TWEET STYLE
 ----------------------------------------------------
-Create 1 tweet in the exact style of extremely viral relatable Twitter humor.
+Create ONE viral tweet with:
+- meme + trend-bait energy
+- chaotic gen-z sarcasm
+- lowercase preferred
+- very short (max 2 lines)
+- feels like a random intrusive thought
+- no motivation, no advice
+- no hashtags inside tweet
 
-Tone & Personality:
-- casual, chaotic, very human
-- slightly unhinged, slightly dramatic
-- dry humor, light sarcasm
-- lowercase preferred unless necessary
-- feels like an intrusive thought
-- relatable, self-aware, not serious
-- modern internet voice
-- Gen Z energy but universal
+Allowed personality ROTATION (pick one RANDOMLY):
+A) Low battery humor / lazy energy
+B) Indian daily struggle (chai, auto, parents)
+C) Tech/App memes (instagram, whatsapp, netflix, UPI)
+D) Random chaotic thought (wtf how is this trending??)
 
-Content Rules:
-- talk about something simple, everyday, painfully relatable
-- nothing deep, nothing wise, nothing poetic
-- no advice, no motivation, no inspiration
-- write like you're texting a friend
-- can be a question, statement, complaint or friendly rage bait
-- ask mokka questions
-- conversational, not structured
-- optional emojis ONLY if they add comedic chaos (😭😂)
-- should contains only one or two clean line
+Optional emojis: 😂😭😌 but only 0–2 max
 
-Do NOT:
-- no hashtags (in the tweet itself)
-- no formal language
-- no deep quotes
-- no metaphors
-- no long explanations
-- no lists
-- no inspirational tone
+Examples of tone:
+- “why is monday trending again?? we already hate it 😭”
+- “phone at 5% and somehow my life decisions also at 5%”
+- “every app wants premium except my salary”
+- “is google judging me or what”
 
 ----------------------------------------------------
 FINAL OUTPUT FORMAT
 ----------------------------------------------------
-Line 1 → the tweet  
-Line 2 → (empty line)  
-Line 3 → the FIVE filtered safe hashtags, space-separated.
+Line 1 → the tweet (1-2 lines)
+Line 2 → empty line
+Line 3 → EXACT 5 filtered safe hashtags, space-separated
 
-Example FORMAT ONLY (not content):
-i hate when my brain loads slower than my wifi
-
-#fun #omg #relatable #daily #lol
-
-Return ONLY the final post in exactly this 3-line format.
+Return ONLY that final output.
 """
 
 
