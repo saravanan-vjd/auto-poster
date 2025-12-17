@@ -1,27 +1,26 @@
 import os
 import tweepy
-import google.genai as genai
+from google import genai  # Correct import for new SDK
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import random
 import time
 
 # ==================== ENVIRONMENT VARIABLES ====================
-
 API_KEY = os.getenv("API_KEY")
 API_SECRET = os.getenv("API_SECRET")
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 ACCESS_SECRET = os.getenv("ACCESS_SECRET")
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")  # Works automatically (or rename to GEMINI_API_KEY)
 
 if not all([API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_SECRET, GOOGLE_API_KEY]):
     raise ValueError("Missing required API keys in environment variables.")
 
-# Configure Gemini
-genai.configure(api_key=GOOGLE_API_KEY)
+# Gemini Client (auto-uses GOOGLE_API_KEY or GEMINI_API_KEY from env)
+client_gemini = genai.Client()
 
 # Tweepy Client
-client = tweepy.Client(
+client_tweepy = tweepy.Client(
     consumer_key=API_KEY,
     consumer_secret=API_SECRET,
     access_token=ACCESS_TOKEN,
@@ -66,8 +65,12 @@ Return ONLY the tweet text. No quotes, no extra text.
 # ==================== GENERATE TWEET ====================
 def make_final_post() -> str | None:
     try:
-        model = genai.GenerativeModel("gemini-2.5-flash")
-        response = model.generate_content(build_prompt())
+        prompt = build_prompt()
+        
+        response = client_gemini.models.generate_content(
+            model="gemini-2.5-flash",  # Use "gemini-1.5-flash" (stable) or "gemini-2.5-flash" if available
+            contents=prompt
+        )
         
         if not response.text:
             log("⚠️ Gemini returned empty text")
@@ -110,7 +113,7 @@ def post_now():
 
     # Final post
     try:
-        response = client.create_tweet(text=clean_tweet)
+        response = client_tweepy.create_tweet(text=clean_tweet)
         tweet_id = response.data['id']
         url = f"https://x.com/i/status/{tweet_id}"
         
